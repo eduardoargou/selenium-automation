@@ -9,7 +9,7 @@ class LoginPage(BasePage):
   error_alert = '//div[@role="alert"]'
 
   def __init__(self, driver):
-    self.driver = driver
+    super().__init__(driver)
 
   def enter_username(self, username):
     element = self.wait_until_element_is_clickable(By.XPATH, self.username_input)
