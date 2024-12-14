@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+from pages.login_page import LoginPage
 
 class TestLogin:
 
@@ -16,16 +17,12 @@ class TestLogin:
     url = 'https://automation-sandbox-python-mpywqjbdza-uc.a.run.app/'
     driver.get(url)
     driver.maximize_window()
-    # Enter username
-    wait = WebDriverWait(driver, 5)
-    username_input = wait.until(EC.element_to_be_clickable((By.XPATH, '//input[@name="username"]')))
-    username_input.send_keys(self.username)
-    # Enter password
-    password_input = wait.until(EC.element_to_be_clickable((By.XPATH, '//input[@name="password"]')))
-    password_input.send_keys(self.password)
-    # Click button
-    login_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@id="btnLogin"]')))
-    login_button.click()
+    # Attempt login
+    login_page = LoginPage(driver)
+    login_page.enter_username(self.username)
+    login_page.enter_password(self.password)
+    login_page.click_login_button()
     # Validate invoice page
+    wait = WebDriverWait(driver, 5)
     invoice_list_title = wait.until(EC.visibility_of_all_elements_located((By.XPATH, '//*[text()[contains(.,"Invoice List")]]')))
     assert invoice_list_title[0].text == 'Invoice List'
