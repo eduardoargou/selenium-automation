@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
 import pytest
 
+
 @pytest.fixture(scope='function')
 def setup(request):
   url = 'https://automation-sandbox-python-mpywqjbdza-uc.a.run.app/'

@@ -2,6 +2,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from pages.login_page import LoginPage
+from pages.invoice_list_page import InvoiceListPage
+from utils.assertions import assert_element_contains_text
 import pytest
 
 
@@ -10,9 +12,10 @@ class TestLogin:
 
   username = 'demouser'
   password = 'abc123'
-
   failing_username = 'Demouser'
   failing_password = 'abc123'
+  error_text = 'Wrong username or password'
+  invoice_list_title_text = 'Invoice List'
 
   def test_successful_login(self):
     # Attempt login
@@ -21,11 +24,11 @@ class TestLogin:
     login_page.enter_password(self.password)
     login_page.click_login_button()
     # Validate invoice page
-    wait = WebDriverWait(self.driver, 5)
-    invoice_list_title = wait.until(EC.visibility_of_all_elements_located((By.XPATH, '//*[text()[contains(.,"Invoice List")]]')))
-    assert invoice_list_title[0].text == 'Invoice List'
+    invoice_list_page = InvoiceListPage(self.driver)
+    invoice_list_title = invoice_list_page.get_invoice_list_title()
+    assert_element_contains_text(invoice_list_title, self.invoice_list_title_text)
 
-  def test_failed_login(self):
+  def test_failed_login(self): 
     # Attempt login
     login_page = LoginPage(self.driver)
     login_page.enter_username(self.failing_username)
@@ -33,4 +36,4 @@ class TestLogin:
     login_page.click_login_button()
     # Validate error alert
     error_alert = login_page.get_error_alert()
-    assert 'Wrong username or password' in error_alert.text
+    assert_element_contains_text(error_alert, self.error_text)
