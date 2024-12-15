@@ -10,10 +10,9 @@ import pytest
 @pytest.mark.usefixtures('setup')
 class TestLogin:
 
-  username = 'demouser'
-  password = 'abc123'
   invoice_list_title_text = 'Invoice List'
   error_text = 'Wrong username or password'
+  working_credentials = [('demouser', 'abc123')]
   failing_credentials = [
     ('Demouser', 'abc123'),
     ('demouser_', 'xyz'),
@@ -21,12 +20,11 @@ class TestLogin:
     ('demouser', 'abc123')
   ]
 
-  def test_successful_login(self):
+  @pytest.mark.parametrize("username, password", working_credentials)
+  def test_successful_login(self, username, password):
     # Attempt login
     login_page = LoginPage(self.driver)
-    login_page.enter_username(self.username)
-    login_page.enter_password(self.password)
-    login_page.click_login_button()
+    login_page.attempt_login(username, password)
     # Validate invoice page
     invoice_list_page = InvoiceListPage(self.driver)
     invoice_list_title = invoice_list_page.get_invoice_list_title()
@@ -36,9 +34,7 @@ class TestLogin:
   def test_failed_login(self, username, password): 
     # Attempt login
     login_page = LoginPage(self.driver)
-    login_page.enter_username(username)
-    login_page.enter_password(password)
-    login_page.click_login_button()
+    login_page.attempt_login(username, password)
     # Validate error alert
     error_alert = login_page.get_error_alert()
     assert_element_contains_text(error_alert, self.error_text)

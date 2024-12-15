@@ -26,3 +26,8 @@ class LoginPage(BasePage):
 
   def get_error_alert(self):
     return self.wait_until_element_is_present(By.XPATH, self.error_alert)
+
+  def attempt_login(self, username, password):
+    self.enter_username(username)
+    self.enter_password(password)
+    self.click_login_button()
