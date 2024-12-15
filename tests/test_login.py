@@ -12,10 +12,14 @@ class TestLogin:
 
   username = 'demouser'
   password = 'abc123'
-  failing_username = 'Demouser'
-  failing_password = 'abc123'
-  error_text = 'Wrong username or password'
   invoice_list_title_text = 'Invoice List'
+  error_text = 'Wrong username or password'
+  failing_credentials = [
+    ('Demouser', 'abc123'),
+    ('demouser_', 'xyz'),
+    ('demouser', 'nananana'),
+    ('demouser', 'abc123')
+  ]
 
   def test_successful_login(self):
     # Attempt login
@@ -28,11 +32,12 @@ class TestLogin:
     invoice_list_title = invoice_list_page.get_invoice_list_title()
     assert_element_contains_text(invoice_list_title, self.invoice_list_title_text)
 
-  def test_failed_login(self): 
+  @pytest.mark.parametrize("username, password", failing_credentials)
+  def test_failed_login(self, username, password): 
     # Attempt login
     login_page = LoginPage(self.driver)
-    login_page.enter_username(self.failing_username)
-    login_page.enter_password(self.failing_password)
+    login_page.enter_username(username)
+    login_page.enter_password(password)
     login_page.click_login_button()
     # Validate error alert
     error_alert = login_page.get_error_alert()
